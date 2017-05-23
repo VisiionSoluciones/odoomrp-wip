@@ -49,20 +49,25 @@ class SaleOrder(models.Model):
         for line in order.order_line:
             taxes = line.tax_id.compute_all(
                 (line.price_unit * (1 - (line.discount or 0.0) / 100.0)),
-                line.product_uom_qty, line.product_id,
+                line.order_id.currency_id,
+                line.product_uom_qty, 
+                line.product_id,
                 order.partner_id)['taxes']
             for tax in taxes:
+                print tax
                 val = {
                     'order': order.id,
                     'name': tax['name'],
                     'amount': tax['amount'],
-                    'base': currency.round(tax['price_unit'] *
-                                           line.product_uom_qty),
+                    'base' : tax['base'],
+#                     'base': currency.round(tax['price_unit'] *
+#                                            line.product_uom_qty),
                     'sequence': tax['sequence'],
-                    'base_code_id': tax['base_code_id'],
-                    'tax_code_id': tax['tax_code_id'],
+                    #'base_code_id': tax['base_code_id'],
+                    #'tax_code_id': tax['tax_code_id'],
                 }
-                key = (val['tax_code_id'], val['base_code_id'])
+                #key = (val['tax_code_id'], val['base_code_id'])
+                key = (val['name'])
                 if key not in tax_grouped:
                     tax_grouped[key] = val
                 else:
@@ -88,11 +93,25 @@ class SaleOrder(models.Model):
                     'base': tax['base'],
                     'amount': tax['amount']})
         return True
+    
+    @api.model
+    @api.returns('self', lambda value:value.id)
+    def create(self, vals):
+        res =  models.Model.create(self, vals)
+        res._calc_taxes()
+        return res.id
+     
+     
+    @api.multi
+    def write(self, vals):
+        res = models.Model.write(self, vals)
+        self._calc_taxes()
+        return res
 
     @api.multi
-    def action_wait(self):
+    def action_draft(self):
         self._calc_taxes()
-        return super(SaleOrder, self).action_wait()
+        return super(SaleOrder, self).action_draft()
 
     @api.multi
     def button_dummy(self):
