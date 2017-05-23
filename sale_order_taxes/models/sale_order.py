@@ -54,7 +54,6 @@ class SaleOrder(models.Model):
                 line.product_id,
                 order.partner_id)['taxes']
             for tax in taxes:
-                print tax
                 val = {
                     'order': order.id,
                     'name': tax['name'],
