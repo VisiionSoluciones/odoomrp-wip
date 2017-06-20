@@ -98,7 +98,7 @@ class SaleOrder(models.Model):
     def create(self, vals):
         res =  models.Model.create(self, vals)
         res._calc_taxes()
-        return res.id
+        return res
      
      
     @api.multi
