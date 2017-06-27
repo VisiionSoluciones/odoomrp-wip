@@ -38,11 +38,13 @@ class SaleOrderTax(models.Model):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    taxes = fields.One2many(comodel_name='sale.order.tax',
-                            inverse_name='sale_order', string='Taxes')
+    taxes = fields.One2many(
+        comodel_name='sale.order.tax',
+        inverse_name='sale_order', 
+        string='Taxes')
 
     @api.multi
-    def compute(self, order):
+    def compute_taxes_group(self, order):
         tax_grouped = {}
         currency = order.currency_id.with_context(
             date=order.date_order or fields.Date.context_today(order))
@@ -84,7 +86,7 @@ class SaleOrder(models.Model):
         tax_model = self.env['sale.order.tax']
         for order in self:
             order.taxes.unlink()
-            for tax in self.compute(order).values():
+            for tax in self.compute_taxes_group(order).values():
                 tax_model.create({
                     'sale_order': tax['order'],
                     'sequence': tax['sequence'],
@@ -93,12 +95,12 @@ class SaleOrder(models.Model):
                     'amount': tax['amount']})
         return True
     
-    @api.model
-    @api.returns('self', lambda value:value.id)
-    def create(self, vals):
-        res =  models.Model.create(self, vals)
-        res._calc_taxes()
-        return res
+#     @api.model
+#     @api.returns('self', lambda value:value.id)
+#     def create(self, vals):
+#         res =  models.Model.create(self, vals)
+#         res._calc_taxes()
+#         return res
      
      
     @api.multi
@@ -109,11 +111,12 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_draft(self):
-        self._calc_taxes()
-        return super(SaleOrder, self).action_draft()
-
-    @api.multi
-    def button_dummy(self):
-        res = super(SaleOrder, self).button_dummy()
+        res = super(SaleOrder, self).action_draft()
         self._calc_taxes()
         return res
+# 
+#     @api.multi
+#     def button_dummy(self):
+#         res = super(SaleOrder, self).button_dummy()
+#         self._calc_taxes()
+#         return res
