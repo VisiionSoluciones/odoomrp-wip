@@ -6,14 +6,16 @@
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view" />
             <field name="arch" type="xml">
-                <xpath expr="//page[@string='Consumed Products']" position="inside">
-                <group col="2" colspan="2">
-                    <button name="%(action_addition)d"
-                            type="action"
-                            states="confirmed,ready,in_production"
-                            string="Add extra raw material"
-                            class="oe_highlight"/>
-                </group>
+                <xpath expr="//page[1]" position="inside">
+	                <group colspan="4">
+	                	<div>
+			                 <button name="%(action_addition)d"
+			                         type="action"
+			                         states="confirmed,ready,in_production"
+			                         string="Add extra raw material"
+			                         class="oe_highlight"/>
+	                      </div>
+	                </group>
                 </xpath>
             </field>
         </record>

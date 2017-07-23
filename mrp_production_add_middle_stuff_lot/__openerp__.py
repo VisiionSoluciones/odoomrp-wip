@@ -30,6 +30,6 @@
     'depends': ["mrp_lot_reserve",
                 "mrp_production_add_middle_stuff"],
     'data': ["wizard/addition_wizard_view.xml"],
-    'installable': False,
+    'installable': True,
     'auto_install': True,
 }

@@ -24,4 +24,5 @@ class StockQuant(models.Model):
             'date': fields.Datetime.now(),
             'quant_ids': [(4, self.id)]
         })
+        self.location_id = dest_location.id
         new_move.action_done()

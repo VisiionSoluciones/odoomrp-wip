@@ -41,8 +41,8 @@ class WizProductionProductLine(models.TransientModel):
                 self.lot.id, self.production_id.location_src_id.id,
                 self.product_qty)
             if not available:
-                raise exceptions.Warning(
-                    _('No Lot Available'), _('There is no lot %s available for'
-                                             ' product') % (self.lot.name))
+                raise exceptions.ValidationError(
+#                     _('No Lot Available'), 
+                    _('There is no lot %s ' 'available for product') %(self.lot.name))
         res = super(WizProductionProductLine, self).add_product()
         return res
