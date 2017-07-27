@@ -33,8 +33,30 @@ class SaleOrderTax(models.Model):
     sequence = fields.Integer(
         string='Sequence',
         help="Gives the sequence order when displaying a list of order tax.")
-
-
+    
+    tax_id = fields.Many2one(
+        comodel_name='account.tax',
+        compute='set_tax_id',
+        store=True)
+    
+    
+    @api.depends('name')
+    def set_tax_id(self):
+        if self.name:
+            tax_obj = self.env['account.tax']
+            tax_id = tax_obj.search([
+                    ('name','like',self.name)
+                    ])
+            
+            
+            print "                   ",tax_id
+            
+            self.tax_id = tax_id.id
+            
+            return True
+            
+            
+            
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -55,7 +77,10 @@ class SaleOrder(models.Model):
                 line.product_uom_qty, 
                 line.product_id,
                 order.partner_id)['taxes']
+                
+                
             for tax in taxes:
+                
                 val = {
                     'order': order.id,
                     'name': tax['name'],
@@ -65,7 +90,6 @@ class SaleOrder(models.Model):
 #                                            line.product_uom_qty),
                     'sequence': tax['sequence'],
                     #'base_code_id': tax['base_code_id'],
-                    #'tax_code_id': tax['tax_code_id'],
                 }
                 #key = (val['tax_code_id'], val['base_code_id'])
                 key = (val['name'])
@@ -92,7 +116,8 @@ class SaleOrder(models.Model):
                     'sequence': tax['sequence'],
                     'name': tax['name'],
                     'base': tax['base'],
-                    'amount': tax['amount']})
+                    'amount': tax['amount'],
+                    })
         return True
     
 #     @api.model
