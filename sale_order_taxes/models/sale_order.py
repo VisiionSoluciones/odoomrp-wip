@@ -101,8 +101,8 @@ class SaleOrder(models.Model):
                     # tax_grouped[key]['base_amount'] += val['base_amount']
                     # tax_grouped[key]['tax_amount'] += val['tax_amount']
         for t in tax_grouped.values():
-            t['base'] = currency.round(t['base'])
-            t['amount'] = currency.round(t['amount'])
+            t['base'] += currency.round(t['base'])
+            t['amount'] += currency.round(t['amount'])
         return tax_grouped
 
     @api.multi
