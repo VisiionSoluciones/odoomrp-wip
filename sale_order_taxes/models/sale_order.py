@@ -40,6 +40,7 @@ class SaleOrderTax(models.Model):
         store=True)
     
     
+    @api.one
     @api.depends('name')
     def set_tax_id(self):
         if self.name:
@@ -49,7 +50,7 @@ class SaleOrderTax(models.Model):
                     ])
             
             
-            print "                   ",tax_id
+            #print "                   ",tax_id
             
             self.tax_id = tax_id.id
             
