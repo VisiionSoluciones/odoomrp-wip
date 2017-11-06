@@ -46,7 +46,8 @@ class SaleOrderTax(models.Model):
         if self.name:
             tax_obj = self.env['account.tax']
             tax_id = tax_obj.search([
-                    ('name','like',self.name)
+                    ('name','like',self.name),
+                    ('company_id','=',self.env.user.company_id.id)
                     ])
             
             
